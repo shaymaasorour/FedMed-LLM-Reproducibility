@@ -1,0 +1,57 @@
+# FedMed-LLM experimental configuration (identical to CFG in the notebook)
+seeds: [11, 22, 33, 44, 55]
+num_clients: 5
+stage_A_tabular:
+  rounds: 8
+  local_epochs: 2
+  batch_size: 128
+  optimizer: "Adam"
+  client_lr: 0.001
+  server_head_lr: 0.005
+  gdbd_proto_weight: 0.5
+  zerodfl_topology: "fixed ring, 2 neighbours"
+  zerodfl_prompt_scale_lambda: 1.0
+  tactfl_tau: 0.2
+  tactfl_label_fraction: 0.2
+  tactfl_window: 8
+stage_B_llm:
+  rounds: 50
+  local_epochs: 1
+  batch_size: 16
+  optimizer: "AdamW"
+  lr: 0.00002
+  weight_decay: 0.01
+  max_len: 256
+  lora_r: 8
+  lora_scaling: 16
+  lora_dropout: 0.05
+  fedprox_mu: 0.01
+  gdbd_proto_weight: 0.5
+  zerodfl_topology: "fixed ring, 2 neighbours"
+  zerodfl_prompt_scale_lambda: 1.0
+  tactfl_tau: 0.2
+  tactfl_label_fraction: 0.2
+  tactfl_head_epochs: 20
+stage_C_systems:
+  devices: 740
+  hours: 72
+stage_D_lora_proxy:
+  rounds: 5
+  rounds_new_results: 10
+  local_epochs: 1
+  batch_size: 64
+  optimizer: "Adam"
+  lr: 0.001
+  samples_per_client: 600
+  input_dim: 64
+  lora_r: 8
+  lora_scaling: 16
+  lora_dropout: 0.1
+heterogeneity:
+  emd_dirichlet_alphas: [null, 5.0, 2.0, 1.0, 0.5, 0.3, 0.2, 0.1]
+  noniid_1_alpha: 1.0
+  noniid_2_alpha: 0.3
+  low_medium_high_alpha: [5.0, 1.0, 0.2]
+  long_horizon_rounds: 100
+  sweep_train_fraction: 0.4
+hyperparameter_selection: "prior literature / backbone defaults (LoRA r=8, AdamW 2e-5); no grid search or tuning on the test splits"
